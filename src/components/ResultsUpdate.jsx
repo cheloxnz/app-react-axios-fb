@@ -1,10 +1,10 @@
 import React from 'react';
 
-const ResultsAdd = ({ name, tecnology, grade, handleChange, handlePost }) => {
+const ResultsUpdate = ({ name, tecnology, grade, handleChange, handleUpdate, handleModalClose }) => {
     return (
-        <div className='results-add'>
-            <form className='ui-form' autoComplete='off' onSubmit={handlePost}>
-                <h2>New Entry</h2>
+        <div className='results-edit'>
+            <form className='ui-form' autoComplete='off' onSubmit={handleUpdate}>
+                <h2>Update Entry</h2>
                 <label htmlFor="">Name:</label>
                 <input
                     autoFocus
@@ -33,10 +33,11 @@ const ResultsAdd = ({ name, tecnology, grade, handleChange, handlePost }) => {
                     type="text"
                     onChange={handleChange}
                 />
-                <input type="submit" value='Send' />
+                <input type="submit" value='Update' />
             </form>
+            <button className='close-btn' onClick={() => handleModalClose()}>Close</button>
         </div>
     );
 }
 
-export default ResultsAdd;
+export default ResultsUpdate;

@@ -9,6 +9,7 @@ class Results extends Component {
         tecnology: '',
         grade: '',
         results: [],
+        modalIsOpen: false,
     };
 
     componentDidMount() {
@@ -61,11 +62,62 @@ class Results extends Component {
 
         this.setState({
             results: this.state.results.filter(result => result.id !== id)
+        });
+    }
+
+    handleModalOpen = (id) => {
+        const result = this.state.results.find(result => result.id === id)
+        this.setState({
+            name: result.name,
+            tecnology: result.tecnology,
+            grade: result.grade,
+            id: result.id,
+            modalIsOpen: true,
+        });
+    }
+
+    handleModalClose = () => {
+        this.setState({
+            modalIsOpen: false,
+            name: '',
+            tecnology: '',
+            grade: '',
+        });
+    }
+
+    handleUpdate = (e) => {
+        e.preventDefault()
+
+        this.setState({
+            modalIsOpen: false,
+        })
+
+        const Data = {
+            name: this.state.name,
+            tecnology: this.state.tecnology,
+            grade: this.state.grade,
+        };
+
+        instance.put(`/results/${this.state.id}.json`, Data).then((response) => {
+            console.log(response)
+            instance.get('/results.json').then((response) => {
+                const fetchedData = []
+
+                for (let key in response.data) {
+                    fetchedData.push({ ...response.data[key], id: key })
+                }
+                this.setState({
+                    results: fetchedData,
+                    name: '',
+                    tecnology: '',
+                    grade: '',
+                });
+            });
         })
     }
 
     render() {
-        const { name, tecnology, grade, results } = this.state
+        const { name, tecnology, grade, results, modalIsOpen } = this.state
         return (
             <div className='container'>
                 <ResultsAdd
@@ -78,6 +130,14 @@ class Results extends Component {
                 <ResultsList
                     results={results}
                     handleDelete={this.handleDelete}
+                    handleModalOpen={this.handleModalOpen}
+                    handleModalClose={this.handleModalClose}
+                    modalIsOpen={modalIsOpen}
+                    name={name}
+                    tecnology={tecnology}
+                    grade={grade}
+                    handleChange={this.handleChange}
+                    handleUpdate={this.handleUpdate}
                 />
             </div>
         );
