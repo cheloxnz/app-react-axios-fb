@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import ResultsAdd from './ResultsAdd';
 import instance from '../firebase/instance';
 import ResultsList from './ResultsList';
+import { trackPromise } from 'react-promise-tracker';
+import { toast } from 'react-toastify';
 
 class Results extends Component {
     state = {
@@ -13,7 +15,7 @@ class Results extends Component {
     };
 
     componentDidMount() {
-        instance.get('/results.json').then((response) => {
+        trackPromise(instance.get('/results.json').then((response) => {
             const fetchedData = []
 
             for (let key in response.data) {
@@ -22,7 +24,8 @@ class Results extends Component {
             this.setState({
                 results: fetchedData
             })
-        });
+        })
+        );
     }
 
     handlePost = e => {
@@ -34,7 +37,7 @@ class Results extends Component {
             grade: this.state.grade,
         };
 
-        instance.post('/results.json', Data).then((response) => {
+        trackPromise(instance.post('/results.json', Data).then((response) => {
             console.log(response);
 
             const results = [...this.state.results, { ...Data, id: response.data.name },];
@@ -44,8 +47,11 @@ class Results extends Component {
                 tecnology: '',
                 grade: '',
                 results: results
-            })
-        });
+            });
+
+            toast.success('You added a new entry...')
+        })
+        );
     };
 
 
@@ -63,7 +69,9 @@ class Results extends Component {
         this.setState({
             results: this.state.results.filter(result => result.id !== id)
         });
-    }
+
+        toast.error('Entry Removed...')
+    };
 
     handleModalOpen = (id) => {
         const result = this.state.results.find(result => result.id === id)
@@ -98,7 +106,7 @@ class Results extends Component {
             grade: this.state.grade,
         };
 
-        instance.put(`/results/${this.state.id}.json`, Data).then((response) => {
+        trackPromise(instance.put(`/results/${this.state.id}.json`, Data).then((response) => {
             console.log(response)
             instance.get('/results.json').then((response) => {
                 const fetchedData = []
@@ -113,7 +121,10 @@ class Results extends Component {
                     grade: '',
                 });
             });
+
+            toast.info('Entry Updated...')
         })
+        );
     }
 
     render() {
